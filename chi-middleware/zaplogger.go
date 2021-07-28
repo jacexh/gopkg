@@ -51,9 +51,9 @@ func RequestZapLog(logger *zap.Logger) func(next http.Handler) http.Handler {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			start := time.Now()
 
-			next.ServeHTTP(ww, middleware.WithLogEntry(r, entry))
+			defer entry.Write(ww.Status(), ww.BytesWritten(), ww.Header(), time.Since(start), nil)
 
-			entry.Write(ww.Status(), ww.BytesWritten(), ww.Header(), time.Since(start), nil)
+			next.ServeHTTP(ww, middleware.WithLogEntry(r, entry))
 		}
 		return http.HandlerFunc(fn)
 	}
