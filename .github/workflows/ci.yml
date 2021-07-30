@@ -18,5 +18,6 @@ jobs:
         packages=`find . -type f -name "go.mod" -exec dirname {} \;`
         for dir in $packages; do
           cd $dir
-          go test -race -convermode=atomic -v ./...
+          go test -race -covermode=atomic -v ./...
+          cd -
         done;
