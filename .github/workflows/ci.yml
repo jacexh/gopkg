@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Test
       run: |
-        packages=`find . -type f -name "go.mod" -exec dirname {}\;`
+        packages=`find . -type f -name "go.mod" -exec dirname {} \;`
         for dir in $packages; do
           cd $dir
           go test -race -convermode=atomic -v ./...
