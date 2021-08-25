@@ -6,15 +6,28 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 )
 
 func TestZapLoggerEntry_Write(t *testing.T) {
-	log, _ := zap.NewProduction()
-	req, _ := http.NewRequest(http.MethodGet, "https://www.google.com", nil)
-	ctx := context.WithValue(context.Background(), middleware.RequestIDKey, "foobar")
-	req = req.WithContext(ctx)
-	entry := NewZapLogEntry(log, req)
-	entry.Write(200, 100, http.Header{"User-Agent": []string{"gopkg/zaplog"}}, 200*time.Millisecond, nil)
+	logger, _ := zap.NewProduction()
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(RequestZapLog(logger))
+	r.Get("/foobar", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("foobar"))
+	})
+
+	srv := &http.Server{
+		Addr:    "127.0.0.1:19988",
+		Handler: r,
+	}
+	go srv.ListenAndServe()
+
+	time.Sleep(1 * time.Second)
+	http.Get("http://127.0.0.1:19988/foobar")
+	srv.Shutdown(context.TODO())
 }

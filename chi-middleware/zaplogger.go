@@ -13,15 +13,10 @@ type (
 		logger    *zap.Logger
 		requestID string
 		method    string
-		path      string
-		query     string
+		uri       string
 		userAgent string
 		ip        string
 	}
-)
-
-var (
-	_ middleware.LogEntry = (*ZapLoggerEntry)(nil)
 )
 
 func NewZapLogEntry(logger *zap.Logger, r *http.Request) middleware.LogEntry {
@@ -29,8 +24,7 @@ func NewZapLogEntry(logger *zap.Logger, r *http.Request) middleware.LogEntry {
 		logger:    logger,
 		requestID: middleware.GetReqID(r.Context()),
 		method:    r.Method,
-		path:      r.URL.Path,
-		query:     r.URL.RawQuery,
+		uri:       r.RequestURI,
 		userAgent: r.Header.Get("User-Agent"),
 		ip:        r.RemoteAddr,
 	}
@@ -39,8 +33,7 @@ func NewZapLogEntry(logger *zap.Logger, r *http.Request) middleware.LogEntry {
 func (zl ZapLoggerEntry) Write(status, bytes int, header http.Header, elapsed time.Duration, extra interface{}) {
 	zl.logger.Info("request complete",
 		zap.String("request_method", zl.method),
-		zap.String("request_path", zl.path),
-		zap.String("request_query", zl.query),
+		zap.String("request_uri", zl.uri),
 		zap.String("user_agent", zl.userAgent),
 		zap.String("client_ip", zl.ip),
 		zap.Int("response_status_code", status),
@@ -65,7 +58,9 @@ func RequestZapLog(logger *zap.Logger) func(http.Handler) http.Handler {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			start := time.Now()
 
-			defer entry.Write(ww.Status(), ww.BytesWritten(), ww.Header(), time.Since(start), nil)
+			defer func() {
+				entry.Write(ww.Status(), ww.BytesWritten(), ww.Header(), time.Since(start), nil)
+			}()
 
 			next.ServeHTTP(ww, middleware.WithLogEntry(r, entry))
 		}
