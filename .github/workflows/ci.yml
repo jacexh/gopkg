@@ -17,6 +17,11 @@ jobs:
       run: make test
     - name: Benchmark
       run: make benchmark
+
+  code-coverage:
+    runs-on: ubuntu-latest
+    needs: unittest
+    steps:
     - name: Code Coverage Report
       uses: codecov/codecov-action@v2
       with:
