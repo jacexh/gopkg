@@ -17,3 +17,11 @@ jobs:
       run: make test
     - name: Benchmark
       run: make benchmark
+    - name: Code Coverage Report
+      uses: codecov/codecov-action@v2
+      with:
+        files: coverage.txt
+        verbose: true
+        flags: unittest
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
