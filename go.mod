@@ -7,4 +7,5 @@ replace (
 	github.com/jacexh/gopkg/logger => ./logger
 	github.com/jacexh/gopkg/validation => ./validation
 	github.com/jacexh/gopkg/zaprotate => ./zaprotate
+    github.com/jacexh/gopkg/mediator => ./mediator
 )
