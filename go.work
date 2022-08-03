@@ -7,4 +7,6 @@ use (
 	./mediator
 	./validation
 	./zaprotate
+	./config
+	./encoding
 )
