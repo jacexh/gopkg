@@ -1,10 +1,8 @@
 package toml
 
 import (
-	"bytes"
-
-	"github.com/BurntSushi/toml"
 	"github.com/jacexh/gopkg/encoding"
+	"github.com/pelletier/go-toml/v2"
 )
 
 type tomlCodec struct{}
@@ -14,12 +12,7 @@ func (c tomlCodec) Name() string {
 }
 
 func (c tomlCodec) Marshal(v interface{}) ([]byte, error) {
-	buf := bytes.NewBuffer(nil)
-	err := toml.NewEncoder(buf).Encode(v)
-	if err == nil {
-		return buf.Bytes(), nil
-	}
-	return nil, err
+	return toml.Marshal(v)
 }
 
 func (c tomlCodec) Unmarshal(data []byte, v interface{}) error {
