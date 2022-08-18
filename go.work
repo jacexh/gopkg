@@ -9,4 +9,5 @@ use (
 	./zaprotate
 	./config
 	./encoding
+	./dsn
 )

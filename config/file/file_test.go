@@ -312,7 +312,7 @@ func TestMergeDataRace(t *testing.T) {
 	c := config.New(config.WithSource(
 		NewSource(path),
 	))
-	const count = 50
+	const count = 10
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 	startCh := make(chan struct{})
